@@ -1,4 +1,4 @@
-package org.example.optimization;
+package org.example;
 
 public interface Localization {
 }

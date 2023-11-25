@@ -1,25 +1,28 @@
 package org.example.optimization;
 
+import org.example.Point3;
+import org.example.Point3StandardLocalization;
 import org.example.StandardLocalization;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class Binary {
+public class BinaryPoint3 {
     Double accuracy;
-    Function<Double, Double> f;
-    StandardLocalization local;
+    Function<Point3, Double> f;
+    Point3StandardLocalization local;
 
-    public Binary(Function<Double, Double> f, Double accuracy, StandardLocalization local) {
+    public BinaryPoint3(Function<Point3, Double> f, Double accuracy, Point3StandardLocalization local) {
         this.local = local;
         this.accuracy = accuracy;
         this.f = f;
     }
 
-    public List<Double> findExtremes() {
-        List<Double> extremes = new ArrayList<>();
+    public List<Point3> findExtremes() {
+        List<Point3> extremes = new ArrayList<>();
         var minLocales = local.findMinLocales();
+        System.out.println(minLocales);
         for(var min:minLocales) {
             extremes.add(findMinExtremum(min.left, min.right));
         }
@@ -31,13 +34,16 @@ public class Binary {
         return extremes;
     }
 
-    public Double findMinExtremum(Double left, Double right) {
-        while (Math.abs(left - right) > accuracy){
+    public Point3 findMinExtremum(Point3 left, Point3 right) {
 
-            double l = Math.abs(right - left);
-            double mid = left + (l / 2);
-            double x1 = left + (l / 4);
-            double x2 = right - (l / 4);
+        while (Math.abs(left.x - right.x) > accuracy
+                || Math.abs(left.y - right.y) > accuracy
+                || Math.abs(left.z - right.z) > accuracy) {
+            System.out.println(".");
+            var l = right.dif(left);
+            var mid = left.sum(l.multiply(0.5d));
+            var x1 = left.sum(l.multiply(0.25d));
+            var x2 = right.dif(l.multiply(0.25d));
 
             if (f.apply(x1) < f.apply(mid)) {
                 right = mid;
@@ -50,16 +56,16 @@ public class Binary {
                 right = x2;
             }
         }
-        return left + (right - left);
+        return left.sum(right.dif(left));
     }
 
-    public Double findMaxExtremum(Double left, Double right) {
+    public Point3 findMaxExtremum(Point3 left, Point3 right) {
         while (Math.abs(f.apply(left) - f.apply(right)) > accuracy){
-
-            double l = Math.abs(right - left);
-            double mid = left + (l / 2);
-            double x1 = left + (l / 4);
-            double x2 = right - (l / 4);
+            System.out.println("|");
+            var l = right.dif(left);
+            var mid = left.sum(l.multiply(0.5d));
+            var x1 = left.sum(l.multiply(0.25d));
+            var x2 = right.sum(l.multiply(0.25d));
 
             if (f.apply(x1) > f.apply(mid)) {
                 right = mid;
@@ -72,6 +78,6 @@ public class Binary {
                 right = x2;
             }
         }
-        return left + (right - left);
+        return left.sum(right.dif(left));
     }
 }

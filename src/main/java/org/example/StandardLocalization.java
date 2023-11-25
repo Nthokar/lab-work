@@ -1,7 +1,5 @@
 package org.example;
 
-import org.example.optimization.Localization;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -20,15 +18,15 @@ public class StandardLocalization implements Localization {
     }
 
 
-    public List<ExtremumLocal> findMinLocales() {
-        List<ExtremumLocal> extremes = new ArrayList<>();
+    public List<ExtremumLocal<Double>> findMinLocales() {
+        List<ExtremumLocal<Double>> extremes = new ArrayList<>();
         Double xLeft = xMin;
         Double xMid = xMin + h;
         Double xRight = xMid + h;
         while (xRight < xMax) {
             if (f.apply(xLeft) >= f.apply(xMid)
                     && f.apply(xRight) >= f.apply(xMid)) {
-                extremes.add(new ExtremumLocal(xLeft, xRight));
+                extremes.add(new ExtremumLocal<Double>(xLeft, xRight));
             }
             xLeft = xMid;
             xMid = xLeft + h;
@@ -37,15 +35,15 @@ public class StandardLocalization implements Localization {
         return extremes;
     }
 
-    public List<ExtremumLocal> findMaxLocales() {
-        List<ExtremumLocal> extremes = new ArrayList<>();
+    public List<ExtremumLocal<Double>> findMaxLocales() {
+        List<ExtremumLocal<Double>> extremes = new ArrayList<>();
         Double xLeft = xMin;
         Double xMid = xMin + h;
         Double xRight = xMid + h;
         while (xRight < xMax) {
             if (f.apply(xLeft) <= f.apply(xMid)
                     && f.apply(xRight) <= f.apply(xMid)) {
-                extremes.add(new ExtremumLocal(xLeft, xRight));
+                extremes.add(new ExtremumLocal<Double>(xLeft, xRight));
             }
             xLeft = xMid;
             xMid = xLeft + h;
