@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.function.Function;
 
 public class Point3StandardLocalization {
-    public Function<Point3, Double> f;
-    public Point3 xMin;
-    public Point3 xMax;
-    public Point3 h;
+    public Function<NDimension, Double> f;
+    public NDimension xMin;
+    public NDimension xMax;
+    public NDimension h;
 
-    public Point3StandardLocalization(Function<Point3, Double> f, Point3 xMin, Point3 xMax, Point3 h) {
+    public Point3StandardLocalization(Function<NDimension, Double> f, NDimension xMin, NDimension xMax, NDimension h) {
         this.f = f;
         this.h = h;
         this.xMin = xMin;
@@ -18,17 +18,15 @@ public class Point3StandardLocalization {
     }
 
 
-    public List<ExtremumLocal<Point3>> findMinLocales() {
-        List<ExtremumLocal<Point3>> extremes = new ArrayList<>();
+    public List<ExtremumLocal<NDimension>> findMinLocales() {
+        List<ExtremumLocal<NDimension>> extremes = new ArrayList<>();
         var xLeft = xMin;
         var xMid = xMin.sum(h);
         var xRight = xMid.sum(h);
-        while (xRight.x < xMax.x
-                || xRight.y < xMax.y
-                || xRight.z < xMax.z) {
+        while (xRight.isAny((x, y) -> x < y, xMax)) {
             if (f.apply(xLeft) >= f.apply(xMid)
                     && f.apply(xRight) >= f.apply(xMid)) {
-                extremes.add(new ExtremumLocal<Point3>(xLeft, xRight));
+                extremes.add(new ExtremumLocal<>(xLeft, xRight));
             }
             System.out.println("min loc");
             xLeft = xMid;
@@ -38,17 +36,15 @@ public class Point3StandardLocalization {
         return extremes;
     }
 
-    public List<ExtremumLocal<Point3>> findMaxLocales() {
-        List<ExtremumLocal<Point3>> extremes = new ArrayList<>();
+    public List<ExtremumLocal<NDimension>> findMaxLocales() {
+        List<ExtremumLocal<NDimension>> extremes = new ArrayList<>();
         var xLeft = xMin;
         var xMid = xMin.sum(h);
         var xRight = xMid.sum(h);
-        while (xRight.x < xMax.x
-                || xRight.y < xMax.y
-                || xRight.z < xMax.z) {
+        while (xRight.isAny((x, y) -> x < y, xMax)) {
             if (f.apply(xLeft) <= f.apply(xMid)
                     && f.apply(xRight) <= f.apply(xMid)) {
-                extremes.add(new ExtremumLocal<Point3>(xLeft, xRight));
+                extremes.add(new ExtremumLocal<>(xLeft, xRight));
             }
             xLeft = xMid;
             xMid = xLeft.sum(h);

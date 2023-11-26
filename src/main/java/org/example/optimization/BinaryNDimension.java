@@ -1,26 +1,25 @@
 package org.example.optimization;
 
-import org.example.Point3;
+import org.example.NDimension;
 import org.example.Point3StandardLocalization;
-import org.example.StandardLocalization;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class BinaryPoint3 {
+public class BinaryNDimension {
     Double accuracy;
-    Function<Point3, Double> f;
+    Function<NDimension, Double> f;
     Point3StandardLocalization local;
 
-    public BinaryPoint3(Function<Point3, Double> f, Double accuracy, Point3StandardLocalization local) {
+    public BinaryNDimension(Function<NDimension, Double> f, Double accuracy, Point3StandardLocalization local) {
         this.local = local;
         this.accuracy = accuracy;
         this.f = f;
     }
 
-    public List<Point3> findExtremes() {
-        List<Point3> extremes = new ArrayList<>();
+    public List<NDimension> findExtremes() {
+        List<NDimension> extremes = new ArrayList<>();
         var minLocales = local.findMinLocales();
         System.out.println(minLocales);
         for(var min:minLocales) {
@@ -34,11 +33,9 @@ public class BinaryPoint3 {
         return extremes;
     }
 
-    public Point3 findMinExtremum(Point3 left, Point3 right) {
+    public NDimension findMinExtremum(NDimension left, NDimension right) {
 
-        while (Math.abs(left.x - right.x) > accuracy
-                || Math.abs(left.y - right.y) > accuracy
-                || Math.abs(left.z - right.z) > accuracy) {
+        while (left.isAny((x, y) -> Math.abs(x - y) > accuracy, right)) {
             System.out.println(".");
             var l = right.dif(left);
             var mid = left.sum(l.multiply(0.5d));
@@ -59,8 +56,8 @@ public class BinaryPoint3 {
         return left.sum(right.dif(left));
     }
 
-    public Point3 findMaxExtremum(Point3 left, Point3 right) {
-        while (Math.abs(f.apply(left) - f.apply(right)) > accuracy){
+    public NDimension findMaxExtremum(NDimension left, NDimension right) {
+        while (left.isAny((x, y) -> Math.abs(x - y) > accuracy, right))  {
             System.out.println("|");
             var l = right.dif(left);
             var mid = left.sum(l.multiply(0.5d));
