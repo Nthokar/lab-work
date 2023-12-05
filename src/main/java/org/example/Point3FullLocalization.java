@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public class Point3StandardLocalization {
+public class Point3FullLocalization {
     public Function<NDimension, Double> f;
     public NDimension xMin;
     public NDimension xMax;
     public NDimension h;
 
-    public Point3StandardLocalization(Function<NDimension, Double> f, NDimension xMin, NDimension xMax, NDimension h) {
+    public Point3FullLocalization(Function<NDimension, Double> f, NDimension xMin, NDimension xMax, NDimension h) {
         this.f = f;
         this.h = h;
         this.xMin = xMin;
@@ -28,7 +28,6 @@ public class Point3StandardLocalization {
                     && f.apply(xRight) >= f.apply(xMid)) {
                 extremes.add(new ExtremumLocal<>(xLeft, xRight));
             }
-            System.out.println("min loc");
             xLeft = xMid;
             xMid = xLeft.sum(h);
             xRight = xMid.sum(h);

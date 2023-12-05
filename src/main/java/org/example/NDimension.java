@@ -1,19 +1,19 @@
 package org.example;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 public class NDimension {
-    private final List<Double> x;
+    private final Double[] x;
 
     public Double get(int index) {
-        return x.get(index);
+        return x[index];
     }
 
-    public NDimension(List<Double> x) {
+    public NDimension(Double[] x) {
         this.x = x;
     }
     public NDimension sum(NDimension p) {
@@ -31,8 +31,9 @@ public class NDimension {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (var i = 0; i < x.size(); i++){
-            sb.append(String.format("x%s= %s,", i, x.get(i)));
+        DecimalFormat decimalFormat = new DecimalFormat("#.####");
+        for (var i = 0; i < x.length; i++){
+            sb.append(String.format("x%s= %s,", i, decimalFormat.format(x[i])));
         }
         sb.deleteCharAt(sb.length()-1);
         return sb.toString();
@@ -51,34 +52,62 @@ public class NDimension {
     }
 
     public boolean isAny(BiPredicate<Double, Double> predicate, NDimension other) {
-        if (this.x.size() != other.x.size()) throw new RuntimeException();
+        if (this.x.length != other.x.length) throw new RuntimeException();
 
-        for (var i = 0; i < x.size(); i++) {
-            if (predicate.test(x.get(i), other.x.get(i))) return true;
+        for (var i = 0; i < x.length; i++) {
+            if (predicate.test(x[i], other.x[i])) return true;
         }
         return false;
     }
     public boolean isAll(BiPredicate<Double, Double> predicate, NDimension other) {
-        if (this.x.size() != other.x.size()) throw new RuntimeException();
-        for (var i = 0; i < x.size(); i++) {
-            if (!predicate.test(x.get(i), other.x.get(i))) return false;
+        if (this.x.length != other.x.length) throw new RuntimeException();
+        for (var i = 0; i < x.length; i++) {
+            if (!predicate.test(x[i], other.x[i])) return false;
         }
         return true;
     }
     private NDimension forEach(NDimension a, BiFunction<Double, Double, Double> f) {
-        List<Double> nList = new ArrayList<>();
-        if (this.x.size() != a.x.size()) throw new RuntimeException();
-        for (var i = 0; i < this.x.size(); i++) {
-            nList.add(f.apply(this.x.get(i), a.x.get(i)));
+        Double[] nList = new Double[a.order()];
+        if (this.x.length != a.x.length) throw new RuntimeException();
+        for (var i = 0; i < this.x.length; i++) {
+            nList[i] = f.apply(this.x[i], a.x[i]);
         }
         return new NDimension(nList);
     }
     private NDimension forEach(Double a, BiFunction<Double,Double, Double> f) {
-        List<Double> nList = new ArrayList<>();
-        for (var i = 0; i < this.x.size(); i++) {
-            nList.add(f.apply(this.get(i), a));
+        Double[] nList = new Double[order()];
+        for (var i = 0; i < this.x.length; i++) {
+            nList[i] = f.apply(this.get(i), a);
         }
         return new NDimension(nList);
+    }
+
+    public Integer order () {
+        return x.length;
+    }
+    public NDimension basis() {
+        var x = new Double[order()];
+        Arrays.fill(x, 0);
+        return new NDimension(x);
+    }
+
+    /** WARNING: Only if points on the same line
+     *
+     */
+    public Integer compare(NDimension x, NDimension lineVector, NDimension linePoint) {
+        var i1 = this.forEach(linePoint, (i, j) -> i - j);
+        var i2 = x.forEach(linePoint, (i, j) -> i - j);
+
+        var r1 = 0;
+        for (var i = 0; i < lineVector.order(); i++) {
+            if (lineVector.get(i) != 0) {
+                r1 = i;
+                break;
+            }
+        }
+        var a1 = i1.get(r1)/lineVector.get(r1);
+        var a2 = i2.get(r1)/lineVector.get(r1);
+        return Double.compare(a1, a2);
     }
 }
 
