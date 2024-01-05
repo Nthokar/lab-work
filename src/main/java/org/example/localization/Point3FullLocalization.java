@@ -1,4 +1,7 @@
-package org.example;
+package org.example.localization;
+
+import org.example.ExtremumLocal;
+import org.example.NDimension;
 
 import java.util.ArrayList;
 import java.util.List;

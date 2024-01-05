@@ -1,20 +1,33 @@
-package org.example;
+package org.example.localization;
+
+import lombok.NonNull;
+import org.example.Configurations;
+import org.example.ExtremumLocal;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class StandardLocalization implements Localization {
-    public Function<Double, Double> f;
-    public Double xMin;
-    public Double xMax;
-    public Double h;
+    public final Configurations config;
+    public final Function<Double, Double> f;
+    public final Double xMin;
+    public final Double xMax;
+    public final Double h;
 
-    public StandardLocalization(Function<Double, Double> f, Double xMin, Double xMax, Double h) {
-        this.f = f;
-        this.h = h;
-        this.xMin = xMin;
-        this.xMax = xMax;
+    public StandardLocalization(Configurations config) {
+        this.config = config;
+        f = config.f;
+        xMin = config.minStop;
+        xMax = config.maxStop;
+        h = config.h;
+        if (Objects.isNull(f) || Objects.isNull(h)) {
+            var sb = new StringBuilder();
+            if (Objects.isNull(f)) sb.append(String.format("%s cannot be null\n", "function"));
+            if (Objects.isNull(h)) sb.append(String.format("%s cannot be null\n", "h"));
+            throw new IllegalArgumentException(sb.toString());
+        }
     }
 
 

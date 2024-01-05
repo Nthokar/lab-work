@@ -1,8 +1,9 @@
-package org.example.optimization;
+package org.example.optimization.binary;
 
 import org.example.NDimension;
-import org.example.RandomLocalization;
+import org.example.localization.RandomLocalization;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,10 +22,11 @@ public class BinaryNDimension {
         this.f = f;
     }
 
-    public Set<NDimension> findExtremes() {
-        Set<NDimension> extremes = new HashSet<>();
+    public List<NDimension> findExtremes() {
+        List<NDimension> extremes = new ArrayList<>(    );
         for (var i = 0; i < local.tries; i++) {
             var min = findMinExtremum(local.getStart(), local.direction);
+            if (!contains(extremes, min, accuracy))
             extremes.add(min);
 //            findMaxExtremumRange(local.getStart(), local.h);
         }
@@ -96,7 +98,7 @@ public class BinaryNDimension {
             if (f.apply(x0) < f.apply(x1)) {
                 //find
                 if (f.apply(x2) < f.apply(x0)) {
-                    System.out.println(String.format("points %s %n%s%n ----", x0, x1));
+                    //System.out.println(String.format("points %s %n%s%n ----", x0, x1));
                     return findMinExtremumBetween(x0, x1);
                 } else {
                     x0 = x0.dif(h.multiply(0.5d));
@@ -137,5 +139,9 @@ public class BinaryNDimension {
             }
         }
         return x0;
+    }
+
+    private static boolean contains(List<NDimension> list, NDimension x, double eps)  {
+        return list.stream().anyMatch(i -> i.isAny((x1, x2) -> Math.abs(x2 - x1) < eps, x));
     }
 }
