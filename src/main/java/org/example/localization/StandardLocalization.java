@@ -1,7 +1,6 @@
 package org.example.localization;
 
-import lombok.NonNull;
-import org.example.Configurations;
+import org.example.Configuration;
 import org.example.ExtremumLocal;
 
 import java.util.ArrayList;
@@ -10,13 +9,13 @@ import java.util.Objects;
 import java.util.function.Function;
 
 public class StandardLocalization implements Localization {
-    public final Configurations config;
+    public final Configuration config;
     public final Function<Double, Double> f;
     public final Double xMin;
     public final Double xMax;
     public final Double h;
 
-    public StandardLocalization(Configurations config) {
+    public StandardLocalization(Configuration config) {
         this.config = config;
         f = config.f;
         xMin = config.minStop;

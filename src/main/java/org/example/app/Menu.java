@@ -10,7 +10,7 @@ public class Menu extends AbstractMenu implements Runnable {
         }
         this.sections = new HashMap<>();
         var lastIndex = sections.size() + 1;
-        var exitSection = new Section("exit", lastIndex, x -> {
+        var exitSection = new Section(() -> "exit", lastIndex, () -> {
             throw new CloseMenuException();
         });
         sections.add(exitSection);
@@ -37,7 +37,9 @@ public class Menu extends AbstractMenu implements Runnable {
     }
     public void print(){
         for (var sectionIndex:sections.keySet()) {
-            System.out.println( sections.get(sectionIndex).index + " " + sections.get(sectionIndex).title);
+            var toPrint = sections.get(sectionIndex).toPrint();
+            System.out.println(toPrint);
+            //System.out.println(String.format("[%s] - %s", sections.get(sectionIndex).index, sections.get(sectionIndex).title.get()));
         }
     }
 }

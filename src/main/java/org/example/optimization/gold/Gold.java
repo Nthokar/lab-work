@@ -1,52 +1,20 @@
 package org.example.optimization.gold;
 
-import lombok.NonNull;
-import org.example.Configurations;
+import org.example.Configuration;
 import org.example.ExtremumLocal;
+import org.example.optimization.Optimization;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
-public class Gold {
-    Configurations config;
-    @NonNull
-    Function<Double, Double> f;
-    @NonNull
-    public Integer iter;
-    @NonNull
-    Double minRandom, maxRandom;
-    @NonNull
-    Double minStop, maxStop;
-    @NonNull
-    Double h, eps;
+public class Gold implements Optimization {
+    Configuration config;
     public static final double GOLD = 0.618d;
 
-    public Gold(Configurations config) {
-        f = config.f;
-        iter = config.iter;
-        minRandom = config.minRandom;
-        maxRandom = config.maxRandom;
-        minStop = config.minStop;
-        maxStop = config.maxStop;
-        h = config.h;
-        eps = config.eps;
-        if (Objects.isNull(f) || Objects.isNull(iter) ||
-                Objects.isNull(minRandom) || Objects.isNull(maxRandom) ||
-                Objects.isNull(minStop) || Objects.isNull(maxStop) ||
-                Objects.isNull(h) || Objects.isNull(eps)) {
-            var sb = new StringBuilder();
-            if (Objects.isNull(f)) sb.append(String.format("%s cannot be null\n", "function"));
-            if (Objects.isNull(iter)) sb.append(String.format("%s cannot be null\n", "iteration count"));
-            if (Objects.isNull(minRandom)) sb.append(String.format("%s cannot be null\n", "minRandom"));
-            if (Objects.isNull(maxRandom)) sb.append(String.format("%s cannot be null\n", "maxRandom"));
-            if (Objects.isNull(minStop)) sb.append(String.format("%s cannot be null\n", "minStop"));
-            if (Objects.isNull(maxStop)) sb.append(String.format("%s cannot be null\n", "maxStop"));
-            if (Objects.isNull(h)) sb.append(String.format("%s cannot be null\n", "h"));
-            if (Objects.isNull(eps)) sb.append(String.format("%s cannot be null\n", "eps"));
-            throw new IllegalArgumentException(sb.toString());
-        }
+    public Gold(Configuration config) {
+        this.config = config;
+        validate();
     }
 
     public List<Double> findExtremes() {
@@ -64,14 +32,14 @@ public class Gold {
 
             double prev = 0;
             boolean isValid = true;
-            while (Math.abs(b - a) > eps) {
+            while (Math.abs(b - a) > config.eps) {
                 d = a + GOLD * (b - a);
                 c = a + b - d;
 
-                var fa = f.apply(a);
-                var fb = f.apply(b);
-                var fd = f.apply(d);
-                var fc = f.apply(c);
+                var fa = config.f.apply(a);
+                var fb = config.f.apply(b);
+                var fd = config.f.apply(d);
+                var fc = config.f.apply(c);
 
                 if (fa > fc && fd > fc) {
                     prev = b;
@@ -81,11 +49,11 @@ public class Gold {
                     a = c;
                 } else {
                     if (prev > b) {
-                        a = b - h;
-                        b = prev + h;
+                        a = b - config.h;
+                        b = prev + config.h;
                     } else if (prev < a) {
-                        b = a + h;
-                        a = prev - h;
+                        b = a + config.h;
+                        a = prev - config.h;
                     } else {
                         System.out.println("\nerror");
                         System.out.printf("\na=%f, b=%f%n", a, b);
@@ -95,13 +63,13 @@ public class Gold {
                 }
             }
             if (isValid) {
-                double fd = (int) (((a + b) / 2) * (1 / eps)) / (1 / eps);
-                double p = f.apply(fd);
+                double fd = (int) (((a + b) / 2) * (1 / config.eps)) / (1 / config.eps);
+                double p = config.f.apply(fd);
                 double l = -1;
                 if (Math.abs(p) != 1d / 0d) {
                     boolean inRes = false;
                     for (var extreme : extremes)
-                        if (Math.abs(fd - extreme) < eps) {
+                        if (Math.abs(fd - extreme) < config.eps) {
                             inRes = true;
                             break;
                         }
@@ -119,14 +87,14 @@ public class Gold {
 
             double prev = 0;
             boolean isValid = true;
-            while (Math.abs(b - a) > eps) {
+            while (Math.abs(b - a) > config.eps) {
                 d = a + GOLD * (b - a);
                 c = a + b - d;
 
-                var fa = f.apply(a);
-                var fb = f.apply(b);
-                var fd = f.apply(d);
-                var fc = f.apply(c);
+                var fa = config.f.apply(a);
+                var fb = config.f.apply(b);
+                var fd = config.f.apply(d);
+                var fc = config.f.apply(c);
 
                 if (fa < fc && fd < fc) {
                     prev = b;
@@ -136,11 +104,11 @@ public class Gold {
                     a = c;
                 } else {
                     if (prev < b) {
-                        a = b - h;
-                        b = prev + h;
+                        a = b - config.h;
+                        b = prev + config.h;
                     } else if (prev > a) {
-                        b = a + h;
-                        a = prev - h;
+                        b = a + config.h;
+                        a = prev - config.h;
                     } else {
                         System.out.println("\nerror");
                         System.out.printf("\na=%f, b=%f%n", a, b);
@@ -150,13 +118,13 @@ public class Gold {
                 }
             }
             if (isValid) {
-                double fd = (int) (((a + b) / 2) * (1 / eps)) / (1 / eps);
-                double p = f.apply(fd);
+                double fd = (int) (((a + b) / 2) * (1 / config.eps)) / (1 / config.eps);
+                double p = config.f.apply(fd);
                 double l = -1;
                 if (Math.abs(p) != 1d / 0d) {
                     boolean inRes = false;
                     for (var extreme : extremes)
-                        if (Math.abs(fd - extreme) < eps) {
+                        if (Math.abs(fd - extreme) < config.eps) {
                             inRes = true;
                             break;
                         }
@@ -167,21 +135,20 @@ public class Gold {
         }
         return extremes;
     }
-
     List<ExtremumLocal<Double>> findLocalMin() {
         List<ExtremumLocal<Double>> locales = new ArrayList<>();
-        for (int i = 0; i < iter; i++) {
+        for (int i = 0; i < config.iter; i++) {
             //
             // -----o------o----o------
             //      a      b    x
-            double a = Math.random() * (maxRandom - minRandom) + minRandom;
-            double b = a + h;
+            double a = Math.random() * (config.maxRandom - config.minRandom) + config.minRandom;
+            double b = a + config.h;
             var reversed = 1;
-            while (b > minStop && maxStop > b) {
-                double d = a + reversed * GOLD * h;
-                var fa = f.apply(a);
-                var fb = f.apply(b);
-                var fd = f.apply(d);
+            while (b > config.minStop && config.maxStop > b) {
+                double d = a + reversed * GOLD * config.h;
+                var fa = config.f.apply(a);
+                var fb = config.f.apply(b);
+                var fd = config.f.apply(d);
                 if (fa > fd && fb > fd) {
                     if (reversed < 0) {
                         locales.add(new ExtremumLocal<>(b, a));
@@ -195,7 +162,7 @@ public class Gold {
                     reversed = -1;
                 }
                 a = d;
-                b = a + reversed * h;
+                b = a + reversed * config.h;
             }
         }
         return locales;
@@ -203,18 +170,18 @@ public class Gold {
 
     List<ExtremumLocal<Double>> findLocalMax() {
         List<ExtremumLocal<Double>> locales = new ArrayList<>();
-        for (int i = 0; i < iter; i++) {
+        for (int i = 0; i < config.iter; i++) {
             //
             // -----o------o----o------
             //      a      b    x
-            double a = Math.random() * maxRandom + minRandom;
-            double b = a + h;
+            double a = Math.random() * config.maxRandom + config.minRandom;
+            double b = a + config.h;
             var reversed = 1;
-            while (b > minStop && maxStop > b) {
-                double d = a + reversed * GOLD * h;
-                var fa = f.apply(a);
-                var fb = f.apply(b);
-                var fd = f.apply(d);
+            while (b > config.minStop && config.maxStop > b) {
+                double d = a + reversed * GOLD * config.h;
+                var fa = config.f.apply(a);
+                var fb = config.f.apply(b);
+                var fd = config.f.apply(d);
                 if (fa < fd && fb < fd) {
                     if (reversed < 0) {
                         locales.add(new ExtremumLocal<>(b, a));
@@ -228,9 +195,26 @@ public class Gold {
                     reversed = -1;
                 }
                 a = d;
-                b = a + reversed * h;
+                b = a + reversed * config.h;
             }
         }
         return locales;
+    }
+    public void validate() {
+        if (Objects.isNull(config.f) || Objects.isNull(config.iter) ||
+                Objects.isNull(config.minRandom) || Objects.isNull(config.maxRandom) ||
+                Objects.isNull(config.minStop) || Objects.isNull(config.maxStop) ||
+                Objects.isNull(config.h) || Objects.isNull(config.eps)) {
+            var sb = new StringBuilder();
+            if (Objects.isNull(config.f)) sb.append(String.format("%s cannot be null\n", "function"));
+            if (Objects.isNull(config.iter)) sb.append(String.format("%s cannot be null\n", "iteration count"));
+            if (Objects.isNull(config.minRandom)) sb.append(String.format("%s cannot be null\n", "minRandom"));
+            if (Objects.isNull(config.maxRandom)) sb.append(String.format("%s cannot be null\n", "maxRandom"));
+            if (Objects.isNull(config.minStop)) sb.append(String.format("%s cannot be null\n", "minStop"));
+            if (Objects.isNull(config.maxStop)) sb.append(String.format("%s cannot be null\n", "maxStop"));
+            if (Objects.isNull(config.h)) sb.append(String.format("%s cannot be null\n", "h"));
+            if (Objects.isNull(config.eps)) sb.append(String.format("%s cannot be null\n", "eps"));
+            throw new IllegalArgumentException(sb.toString());
+        }
     }
 }

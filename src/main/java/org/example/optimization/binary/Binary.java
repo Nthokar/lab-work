@@ -1,21 +1,21 @@
 package org.example.optimization.binary;
 
-import lombok.NonNull;
-import org.example.Configurations;
+import org.example.Configuration;
 import org.example.localization.StandardLocalization;
+import org.example.optimization.Optimization;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class Binary {
-    final Configurations config;
+public class Binary implements Optimization {
+    final Configuration config;
     final Function<Double, Double> f;
     final Double eps;
     final StandardLocalization local;
 
-    public Binary(Configurations config)  {
+    public Binary(Configuration config)  {
         this.config  = config;
         this.f = config.f;
         this.local = new StandardLocalization(config);

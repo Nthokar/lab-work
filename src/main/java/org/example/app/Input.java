@@ -1,11 +1,7 @@
 package org.example.app;
 
-import org.example.Configurations;
-
 import java.util.Scanner;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class Input implements Runnable {
     public Consumer<String> f;
@@ -16,7 +12,7 @@ public class Input implements Runnable {
         System.out.println("\nplease enter new value");
         System.out.println("\nyou can leave current value by type \"quit\"");
         var scanner = new Scanner(System.in);
-        var message = scanner.next();
+        var message = scanner.nextLine();
 
         if (message.equalsIgnoreCase("quit")) return;
         previous = message;

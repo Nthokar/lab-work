@@ -1,8 +1,10 @@
 package org.example;
 
+import org.example.expression_parser.operations.ExpressionParser;
+
 import java.util.function.Function;
 
-public class Configurations {
+public class Configuration {
     public final Function<Double, Double> f;
     public final Double h;
     public final Double eps;
@@ -23,8 +25,21 @@ public class Configurations {
         Double minRandom, maxRandom;
         Double minStop, maxStop;
 
+        public static Builder newDefault() {
+            var builder = new Builder();
+            builder.h = 0.1;
+            builder.eps = 0.001;
+            builder.iter = 10;
+            builder.minStop = -100_000d;
+            builder.maxStop = 100_000d;
+            return builder;
+        }
+
+
         public Builder setFStr(String fStr) {
             this.fStr = fStr;
+            var postfix = ExpressionParser.toPostfix(fStr);
+            this.f = ExpressionParser.calcPostfix(postfix);
             return this;
         }
 
@@ -63,12 +78,15 @@ public class Configurations {
             return this;
         }
 
-        public Configurations build() {
-            return new Configurations(f, h, eps, iter, minRandom, maxRandom, minStop, maxStop);
+        public Configuration build() {
+            return new Configuration(f, h, eps, iter, minRandom, maxRandom, minStop, maxStop);
         }
 
         public Function<Double, Double> getF() {
             return this.f;
+        }
+        public String getFStr() {
+            return this.fStr;
         }
 
         public Double getH() {
@@ -100,7 +118,7 @@ public class Configurations {
         }
     }
 
-    public Configurations(Function<Double, Double> f, Double h, Double eps, Integer iter, Double minRandom, Double maxRandom, Double minStop, Double maxStop) {
+    public Configuration(Function<Double, Double> f, Double h, Double eps, Integer iter, Double minRandom, Double maxRandom, Double minStop, Double maxStop) {
         this.f = f;
         this.h = h;
         this.eps = eps;
